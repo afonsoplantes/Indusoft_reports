@@ -4,31 +4,31 @@ from tqdm import tqdm
 import shutil
 from datetime import datetime, timedelta
 
-class Indusoft_hst():
+class HST2TXT():
     def __init__(self, in_hst2txt_exe_path: str, in_hst_data_path: str, in_nome_pasta_copia: str) -> None:
         self.hst2txt_exe_path = in_hst2txt_exe_path
         self.hst_folder_path = in_hst_data_path
         self.nome_pasta_hst = in_nome_pasta_copia
-    def caminho_execucao(self):
+    def work_path_location(self):
         return os.getcwd()
     
-    def new_hst_folder_location(self):
+    def new_data_path(self):
         return os.path.join(os.getcwd(),self.nome_pasta_hst)
     
     def cria_pasta_hst(self, hst_files: list):
         try:
-            os.mkdir(self.new_hst_folder_location())
+            os.mkdir(self.new_data_path())
         except:
-            shutil.rmtree(self.new_hst_folder_location(), ignore_errors=False)
-            os.mkdir(self.new_hst_folder_location())
+            shutil.rmtree(self.new_data_path(), ignore_errors=False)
+            os.mkdir(self.new_data_path())
         finally:
             for hst in hst_files:
-                shutil.copy(hst,self.new_hst_folder_location())
+                shutil.copy(hst,self.new_data_path())
     def remove_work(self):
         try:
-            shutil.rmtree(self.new_hst_folder_location(), ignore_errors=False)
+            shutil.rmtree(self.new_data_path(), ignore_errors=False)
         except:
-            print(f'A pasta {self.new_hst_folder_location()} não existe.')
+            print(f'A pasta {self.new_data_path()} não existe.')
 
     def filtra_arquivos_hst(self, arquivos, in_data_inicio:str, in_data_fim:str):       
         data_inicial = datetime.strptime(in_data_inicio, '%d-%m-%Y')
@@ -49,12 +49,14 @@ class Indusoft_hst():
         hst_files_filtros = self.filtra_arquivos_hst(hst_files,in_data_inicio, in_data_fim)
         if len(hst_files) == 0:
             print('Pasta Vasia')
+            return False
         else:
             self.cria_pasta_hst(hst_files_filtros)
             print('Arquivos Carregados')
+            return True
     
     def make_extraction_path(self, files: list, extention: str):
-        folder_location = self.new_hst_folder_location()
+        folder_location = self.new_data_path()
         try:
             os.mkdir(os.path.join(folder_location,extention))
         except:
@@ -71,7 +73,7 @@ class Indusoft_hst():
             print('Pasta Vazia')
 
     def extract_hst_file_to_txt(self):
-        folder_location = self.new_hst_folder_location()
+        folder_location = self.new_data_path()
 
         hst_files = [os.path.join(folder_location,f) for f in os.listdir(folder_location) if f.endswith(".hst")]
         
