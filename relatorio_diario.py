@@ -61,23 +61,25 @@ Dados_Caldeira.set_labels(["C2_VZ_VAPOR_CALD",
 df_gerador = Dados_Gerador.dataFrame_from_list(Dados_Gerador.resume_by_hour(data_importacao), Dados_Gerador.labels)
 df_caldeira = Dados_Caldeira.dataFrame_from_list(Dados_Caldeira.resume_by_hour(data_importacao), Dados_Caldeira.labels)
 
-new_headers = ["Gerador Diesel (KWh)",
-               "Gerador Vapor (KWh)",
-               "Concessionaria (KWh)",
-               "Caldeira (KWh)",
-               "ETE Total(KWh)",
-               "Fermentacao (KWh)",
-               "Secador (KWh)",
-               "Destilaria (KWh)",
-               "Industria Total(KWh)",
-               "Vazao Vapor Total (T/h)",
-               "Pressao (kgf/cm2)"]
+new_headers = ['Gerador Diesel (KWh)',
+               'Gerador Vapor (KWh)',
+               'Concessionaria (KWh)',
+               'Caldeira (KWh)',
+               'ETE Total(KWh)',
+               'Fermentacao (KWh)',
+               'Secador (KWh)',
+               'Destilaria (KWh)',
+               'Industria Total(KWh)',
+               'Vazao Vapor Total (T/h)',
+               'Pressao (kgf/cm2)']
 
 # Merge and change colunms names
 df_dados = df_gerador.join(df_caldeira)
 df_dados.columns = new_headers
 
 df_dados['Consumo Total Planta (kwh)'] = df_dados['Industria Total(KWh)'] + df_dados['Destilaria (KWh)'] + df_dados['ETE Total(KWh)'] + df_dados['Fermentacao (KWh)'] + df_dados['Caldeira (KWh)'] + df_dados['Secador (KWh)']
+
+df_dados['Gerador Vapor (KWh)'] = df_dados['Consumo Total Planta (kwh)'] - df_dados['Concessionaria (KWh)']
 
 df_dados['Vazao Vapor Gerador (T/h)'] = df_dados['Gerador Vapor (KWh)']*(1/114)
 df_dados['Vazao Vapor Secador (T/h)'] = df_dados['Vazao Vapor Total (T/h)'] - df_dados['Gerador Vapor (KWh)']*(1/114)
@@ -87,13 +89,14 @@ df_dados['ind-laboratorio (kWh)'] = df_dados['Industria Total(KWh)']*0.02
 df_dados['ind-cozimento (kWh)'] = df_dados['Industria Total(KWh)']*0.53
 df_dados['ind-moinho (kWh)'] = df_dados['Industria Total(KWh)']*0.27
 df_dados['ind-patriota (kWh)'] = df_dados['Industria Total(KWh)']*0.03
-df_dados['ind-automacao (kWh)'] = df_dados['Industria Total(KWh)']*0.14
+df_dados['ind-automacao (kWh)'] = df_dados['Industria Total(KWh)'] - df_dados[['ind-escritorio (kWh)','ind-laboratorio (kWh)','ind-cozimento (kWh)','ind-moinho (kWh)','ind-patriota (kWh)']].sum(axis=1)
 
 df_dados['ete-adm (kWh)'] = df_dados['ETE Total(KWh)']*0.02
 df_dados['ete-automacao (kWh)'] = df_dados['ETE Total(KWh)']*0.10
-df_dados['ete-producao (kWh)'] = df_dados['ETE Total(KWh)']*0.83
 df_dados['ete-eletrica (kWh)'] = df_dados['ETE Total(KWh)']*0.02
 df_dados['ete-mecanica (kWh)'] = df_dados['ETE Total(KWh)']*0.03
+df_dados['ete-producao (kWh)'] = df_dados['ETE Total(KWh)'] - df_dados[['ete-adm (kWh)','ete-automacao (kWh)','ete-eletrica (kWh)','ete-mecanica (kWh)']].sum(axis=1)
+
 
 exporta_dados_diario(df_dados,data_importacao,export_path)
 
