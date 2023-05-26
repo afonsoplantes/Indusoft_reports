@@ -58,8 +58,8 @@ Dados_Caldeira.add_paths(work_path, caldeira_path)
 Dados_Caldeira.set_labels(["C2_VZ_VAPOR_CALD",
                         "C2_PRESSAO_VAPOR_COLETOR_SAIDA_GERAL_VAPOR"])
 
-df_gerador = Dados_Gerador.dataFrame_from_list(Dados_Gerador.resume_by_hour(data_importacao), Dados_Gerador.labels)
-df_caldeira = Dados_Caldeira.dataFrame_from_list(Dados_Caldeira.resume_by_hour(data_importacao), Dados_Caldeira.labels)
+df_gerador = Dados_Gerador.get_dataframe_by_hour(data_importacao, Dados_Gerador.labels)
+df_caldeira = Dados_Caldeira.get_dataframe_by_hour(data_importacao, Dados_Caldeira.labels)
 
 new_headers = ['Gerador Diesel (KWh)',
                'Gerador Vapor (KWh)',

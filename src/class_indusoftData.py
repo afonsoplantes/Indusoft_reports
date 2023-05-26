@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 import pandas as pd
 import numpy as np
@@ -25,6 +26,16 @@ class Indusoft_data():
         '''Reduce a mxn matrix into a mn matrix'''
         return [item for sublist in t for item in sublist]
     
+    def verifica_arquivos(self, in_data_escolhida:str):
+        file_name = self.set_hst_filename(in_data_escolhida)
+        txt_file_path= os.path.join(self.data_path, os.path.join('TXT_FILES', f'{file_name}.txt'))
+        header_file_path = os.path.join(self.data_path, os.path.join('HDR_FILES', f'{file_name}.hdr'))
+        
+        if os.path.exists(txt_file_path) & os.path.exists(header_file_path):
+            return True
+        else:
+            return False
+
     def get_database(self, in_data_escolhida: str):
         '''Read data from extracted hst file'''
         
@@ -64,7 +75,7 @@ class Indusoft_data():
                 soma_item = 0
         return lista_item
     
-    def resume_by_hour(self, in_data_escolhida):
+    def resume_by_hour(self, in_data_escolhida: str):
         
         label_dados = self.labels
 
@@ -75,9 +86,9 @@ class Indusoft_data():
             lista_dados.append(self.calc_mean_by_hour(df_data[label_dados[jj]]))
 
         return lista_dados
-    
-    def dataFrame_from_list(self, in_lista_dados: list, in_lista_labels: list, transpose_data = False):
-        df = pd.DataFrame(in_lista_dados)
+
+    def get_dataframe_by_hour(self, in_data_escolhida: str, in_lista_labels: list, transpose_data = False):
+        df = pd.DataFrame(self.resume_by_hour(in_data_escolhida))
         df_dados = df.transpose()
         df_dados.columns = in_lista_labels
         
