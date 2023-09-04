@@ -64,8 +64,6 @@ df_caldeira = Dados_Caldeira.get_dataframe_by_hour(data_importacao,
                                                    Dados_Caldeira.labels,
                                                    False)
 
-#print(df_gerador)
-
 new_headers = ['Gerador Diesel (KWh)',
                'Gerador Vapor (KWh)',
                'Concessionaria (KWh)',
@@ -107,10 +105,6 @@ exporta_dados_diario(df_dados,data_importacao,export_path)
 print("############################################")
 print("############ RELATORIO PRONTO ##############")
 print("############################################")
-
-print(df_dados['Gerador Vapor (KWh)'])
-
-Dados_Caldeira.get_dataframe_by_hour()
 
 Caldeira.remove_work()
 Gerador.remove_work()
