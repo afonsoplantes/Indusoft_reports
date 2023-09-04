@@ -47,12 +47,11 @@ work_path = Gerador.work_path_location()
 generator_path = Gerador.new_data_path()
 caldeira_path = Caldeira.new_data_path()
 
-Dados_Gerador = Indusoft_data()
-Dados_Gerador.add_paths(work_path, generator_path)
-Dados_Gerador.set_labels(["K1Q1_PA","K2Q1_PA","K3Q1_PA","K4Q1_PA","K5Q1_PA","K6Q1_PA","K7Q1_PA","K8Q1_PA","K9Q1_PA"])
+Dados_Gerador = Indusoft_data(work_path, generator_path)
+Dados_Gerador.set_labels(["K1Q1_PA","K2Q1_PA","K3Q1_PA","K4Q1_PA","K5Q1_PA",
+                          "K6Q1_PA","K7Q1_PA","K8Q1_PA","K9Q1_PA"])
 
-Dados_Caldeira = Indusoft_data()
-Dados_Caldeira.add_paths(work_path, caldeira_path)
+Dados_Caldeira = Indusoft_data(work_path, caldeira_path)
 Dados_Caldeira.set_labels(["C2_VZ_VAPOR_CALD",
                         "C2_PRESSAO_VAPOR_COLETOR_SAIDA_GERAL_VAPOR"])
 
@@ -60,7 +59,7 @@ lista_data = gerar_lista_datas(data_inicial, data_final)
 
 for data_importacao in lista_data:
 
-    if Dados_Gerador.verifica_arquivos(data_importacao)&Dados_Caldeira.verifica_arquivos(data_importacao):
+    if Dados_Gerador.verifica_arquivos(data_importacao) & Dados_Caldeira.verifica_arquivos(data_importacao):
         print(f'Arquivos do dia {data_importacao} existentes!')
     else:
         continue

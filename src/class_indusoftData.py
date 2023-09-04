@@ -5,12 +5,9 @@ import pandas as pd
 import numpy as np
 
 class Indusoft_data():
-    def __init__(self) -> None:
-        pass
-
-    def add_paths(self, in_work_path: str, in_data_path: str):
+    def __init__(self, in_work_path: str, in_data_path: str) -> None:
         self.work_path = in_work_path
-        self.data_path = in_data_path
+        self.data_path = in_data_path        
     
     def set_labels(self, in_label_dados_escolhidos: list):
         self.labels = in_label_dados_escolhidos
@@ -37,10 +34,13 @@ class Indusoft_data():
             return False
 
     def get_database(self, in_data_escolhida: str):
-        '''Read data from extracted hst file'''
+        '''
+        Read data from extracted hst file
+
+        Inform date as -> dd-mm-yyyy
+        '''
         
         file_name = self.set_hst_filename(in_data_escolhida)
-        
         # Join File Path
         file_path = os.path.join(self.data_path, os.path.join('TXT_FILES', f'{file_name}.txt'))
         header_path = os.path.join(self.data_path, os.path.join('HDR_FILES', f'{file_name}.hdr'))
@@ -54,45 +54,36 @@ class Indusoft_data():
         lista = cabecas[1:].values.tolist()
         header_list = self.flatten(lista)
         header_list.insert(0,'Hora')
-        header_list.insert(0,'Dia')
-        # Make a dataframe with headers
+        header_list.insert(0,'Data')
         dados_brutos = pd.read_csv(file_path, sep='\t', names = header_list)
+
+        dados_brutos['Data'] = pd.to_datetime(dados_brutos['Data'], format='%d/%m/%Y')
+        dados_brutos['Data_Hora'] = dados_brutos['Data'] + pd.to_timedelta(dados_brutos['Hora'])
+        primeiro_item = dados_brutos['Data_Hora'].iloc[0]
+        if 23 <= primeiro_item.hour < 24:
+            dados_brutos['Data_Hora'] = dados_brutos['Data_Hora'] + pd.DateOffset(hours=1)
+        # Remove as colunas 'Data' e 'Hora'.
+        dados_brutos = dados_brutos.drop(['Data', 'Hora'], axis=1)
+        # Obtém a ordem atual das colunas.
+        colunas = dados_brutos.columns.tolist()
+        # Move a coluna 'Data_Hora' para a primeira posição.
+        colunas = ['Data_Hora'] + [coluna for coluna in colunas if coluna != 'Data_Hora']
+        dados_brutos = dados_brutos[colunas]
         return dados_brutos
-
-    def calc_mean_by_hour(self, input_data):
-        df_item = input_data
-
-        lista_item = list()
-        soma_item = 0   
-
-        count = 0
-        for k in range(len(df_item)):
-            soma_item += df_item[k]
-            count+=1
-            if count > (int(len(df_item)/24)-1):
-                lista_item.append(soma_item/(len(df_item)/24))
-                count = 0
-                soma_item = 0
-        return lista_item
     
-    def resume_by_hour(self, in_data_escolhida: str):
-        
-        label_dados = self.labels
-
-        df_data = self.get_database(in_data_escolhida)
-
-        lista_dados = list()
-        for jj in range(len(label_dados)):
-            lista_dados.append(self.calc_mean_by_hour(df_data[label_dados[jj]]))
-
-        return lista_dados
-
     def get_dataframe_by_hour(self, in_data_escolhida: str, in_lista_labels: list, transpose_data = False):
-        df = pd.DataFrame(self.resume_by_hour(in_data_escolhida))
-        df_dados = df.transpose()
-        df_dados.columns = in_lista_labels
+        """
+            in_data_escolhida -> str of the chosen date as dd-mm-yyyy
+
+            in_lista_labels -> list of the labels you choose to show
+
+            transpose_data -> default false, choose if you want to transpose.
+        """
         
+        df = self.get_database(in_data_escolhida) 
+        points_per_hour = 90
+        df_mean = df.groupby(df['Data_Hora'].dt.hour).sum().reset_index()
+        df_dados = df_mean[in_lista_labels]/points_per_hour 
         if transpose_data:
             df_dados = df_dados.transpose()
-
         return df_dados
