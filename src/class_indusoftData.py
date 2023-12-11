@@ -87,3 +87,15 @@ class Indusoft_data():
         if transpose_data:
             df_dados = df_dados.transpose()
         return df_dados
+    
+    def get_database_max(self, in_data_escolhida: str, transpose_data = False):
+
+
+        df = self.get_database(in_data_escolhida)
+
+        df = df[self.labels].max()
+
+        if transpose_data:
+            df = df.transpose()
+
+        return df

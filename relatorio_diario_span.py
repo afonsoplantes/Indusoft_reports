@@ -20,8 +20,8 @@ print("############################################")
 print("############ RELATORIO DIARIO ##############")
 print("############################################")
 
-data_inicial = input("Entre a data de importação Inicial (Exemplo 01-01-2022): ")
-data_final = input("Entre a data de importação Final (Exemplo 01-01-2022): ")
+data_inicial = '01-12-2023'
+data_final = data_importacao
 
 print("############################################")
 print("############ INICIA RELATORIO ##############")
