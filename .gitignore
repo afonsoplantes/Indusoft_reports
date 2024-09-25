@@ -153,3 +153,5 @@ cython_debug/
 entradas.py
 src/class_dataProcess.py
 src/main.py
+
+

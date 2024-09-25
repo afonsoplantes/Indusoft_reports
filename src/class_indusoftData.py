@@ -97,7 +97,6 @@ class Indusoft_data():
     
     def get_database_max(self, in_data_escolhida: str, transpose_data = False):
 
-
         df = self.get_database(in_data_escolhida)
 
         df = df[self.labels].max()
