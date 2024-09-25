@@ -20,8 +20,8 @@ print("############################################")
 print("############ RELATORIO DIARIO ##############")
 print("############################################")
 
-data_inicial = '01-12-2023'
-data_final = data_importacao
+data_inicial = '01-01-2023'
+data_final = '31-12-2023'
 
 print("############################################")
 print("############ INICIA RELATORIO ##############")
@@ -83,6 +83,11 @@ for data_importacao in lista_data:
     df_dados = df_gerador.join(df_caldeira)
     df_dados.columns = new_headers
 
+    #Correção da Base de tempo entre supervisório caldeira e gerador
+    df_dados['Vazao Vapor Total (T/h)'] = df_dados['Vazao Vapor Total (T/h)']*(90/120)
+    df_dados['Pressao (kgf/cm2)'] = df_dados['Pressao (kgf/cm2)']*(90/120)
+
+    # Fim da correçao da base de tempo
     df_dados['Consumo Total Planta (kwh)'] = df_dados['Industria Total(KWh)'] + df_dados['Destilaria (KWh)'] + df_dados['ETE Total(KWh)'] + df_dados['Fermentacao (KWh)'] + df_dados['Caldeira (KWh)'] + df_dados['Secador (KWh)']
 
     df_dados['Gerador Vapor (KWh)'] = df_dados['Consumo Total Planta (kwh)'] - df_dados['Concessionaria (KWh)']

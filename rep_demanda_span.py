@@ -23,7 +23,7 @@ print("############ RELATORIO DIARIO ##############")
 print("############################################")
 
 #data_inicial = input("Entre a data de importação Inicial (Exemplo 01-01-2022): ")
-data_inicial = '01-12-2023'
+data_inicial = '10-12-2023'
 data_final = data_importacao
 
 print("############################################")
@@ -51,6 +51,7 @@ Dados_Gerador.set_labels(["K1Q1_PAP","K2Q1_PAP","K3Q1_PAP","K4Q1_PAP","K5Q1_PAP"
 
 lista_data = gerar_lista_datas(data_inicial, data_final)
 
+demandas = []
 for data_importacao in lista_data:
 
     if Dados_Gerador.verifica_arquivos(data_importacao):
@@ -59,8 +60,11 @@ for data_importacao in lista_data:
         continue
 
     Maximos_do_dia = Dados_Gerador.get_database_max(data_importacao, False)
+    demandas.append(Maximos_do_dia)
 
-    export_lists_csv(data_importacao, Maximos_do_dia, export_path=export_path)
+
+
+export_lists_csv(data_importacao, demandas, export_path=export_path)
 
 print("############################################")
 print("############ RELATORIO PRONTO ##############")

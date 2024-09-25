@@ -23,8 +23,8 @@ print("############################################")
 print("############ RELATORIO DIARIO ##############")
 print("############################################")
 
-data_importacao = data_importacao # dd-mm-yyyy
-#data_importacao = input("Entre a data de importação (Exemplo 01-01-2022): ")
+#data_importacao = data_importacao # dd-mm-yyyy
+data_importacao = input("Entre a data de importação (Exemplo 01-01-2022): ")
 
 print("############################################")
 print("############ INICIA RELATORIO ##############")

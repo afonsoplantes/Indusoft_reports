@@ -82,7 +82,14 @@ class Indusoft_data():
         
         df = self.get_database(in_data_escolhida) 
         points_per_hour = 90
-        df_mean = df.groupby(df['Data_Hora'].dt.hour).sum().reset_index()
+        
+        # Raise an errors on some systems
+        #df_mean = df.groupby(df['Data_Hora'].dt.hour).sum().reset_index()
+        
+        df['Data_Hora'] = df['Data_Hora'].dt.hour
+        df_mean = df.groupby('Data_Hora').sum()
+        df_dados = df_mean[in_lista_labels]/points_per_hour
+
         df_dados = df_mean[in_lista_labels]/points_per_hour 
         if transpose_data:
             df_dados = df_dados.transpose()
