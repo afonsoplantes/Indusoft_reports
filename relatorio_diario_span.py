@@ -20,8 +20,8 @@ print("############################################")
 print("############ RELATORIO DIARIO ##############")
 print("############################################")
 
-data_inicial = '01-01-2023'
-data_final = '31-12-2023'
+data_inicial = '01-01-2024'
+data_final = '30-09-2024'
 
 print("############################################")
 print("############ INICIA RELATORIO ##############")
@@ -76,38 +76,45 @@ for data_importacao in lista_data:
                 'Secador (KWh)',
                 'Destilaria (KWh)',
                 'Industria Total(KWh)',
-                'Vazao Vapor Total (T/h)',
-                'Pressao (kgf/cm2)']
+                'Vazao Vapor Total (Ton)',
+                'Pressao media (kgf/cm2)']
 
     # Merge and change colunms names
     df_dados = df_gerador.join(df_caldeira)
     df_dados.columns = new_headers
 
     #Correção da Base de tempo entre supervisório caldeira e gerador
-    df_dados['Vazao Vapor Total (T/h)'] = df_dados['Vazao Vapor Total (T/h)']*(90/120)
-    df_dados['Pressao (kgf/cm2)'] = df_dados['Pressao (kgf/cm2)']*(90/120)
 
+    df_dados['Vazao Vapor Total (Ton)'] = df_dados['Vazao Vapor Total (Ton)']*(90/120)
+    df_dados['Pressao media (kgf/cm2)'] = df_dados['Pressao media (kgf/cm2)']*(90/120)
+
+    #Remove dados falsos de vazão de vapor, ou seja, quando pressão for menor que 1
+    df_dados.loc[df_dados['Pressao media (kgf/cm2)'] < 1.5, 'Vazao Vapor Total (Ton)'] = 0.01
+    
     # Fim da correçao da base de tempo
     df_dados['Consumo Total Planta (kwh)'] = df_dados['Industria Total(KWh)'] + df_dados['Destilaria (KWh)'] + df_dados['ETE Total(KWh)'] + df_dados['Fermentacao (KWh)'] + df_dados['Caldeira (KWh)'] + df_dados['Secador (KWh)']
 
     df_dados['Gerador Vapor (KWh)'] = df_dados['Consumo Total Planta (kwh)'] - df_dados['Concessionaria (KWh)']
 
-    df_dados['Vazao Vapor Gerador (T/h)'] = df_dados['Gerador Vapor (KWh)']*(1/114)
-    df_dados['Vazao Vapor Secador (T/h)'] = df_dados['Vazao Vapor Total (T/h)'] - df_dados['Gerador Vapor (KWh)']*(1/114)
-    df_dados['Vazao Vapor Escape (T/h)'] = df_dados['Vazao Vapor Gerador (T/h)']*(528.3/916.6)
+    df_dados['Vazao Vapor Gerador (Ton)'] = df_dados['Gerador Vapor (KWh)']*(1/114)
+    df_dados['Vazao Vapor Secador (Ton)'] = df_dados['Vazao Vapor Total (Ton)'] - df_dados['Gerador Vapor (KWh)']*(1/114)
+    #df_dados['Vazao Vapor Escape (Ton)'] = df_dados['Vazao Vapor Gerador (Ton)']*(528.3/916.6)
 
-    df_dados['ind-escritorio (kWh)'] = df_dados['Industria Total(KWh)']*0.01
-    df_dados['ind-laboratorio (kWh)'] = df_dados['Industria Total(KWh)']*0.02
-    df_dados['ind-cozimento (kWh)'] = df_dados['Industria Total(KWh)']*0.53
-    df_dados['ind-moinho (kWh)'] = df_dados['Industria Total(KWh)']*0.27
-    df_dados['ind-patriota (kWh)'] = df_dados['Industria Total(KWh)']*0.03
-    df_dados['ind-automacao (kWh)'] = df_dados['Industria Total(KWh)'] - df_dados[['ind-escritorio (kWh)','ind-laboratorio (kWh)','ind-cozimento (kWh)','ind-moinho (kWh)','ind-patriota (kWh)']].sum(axis=1)
+    df_dados.loc[df_dados['Pressao media (kgf/cm2)'] < 1.5, 'Vazao Vapor Gerador (Ton)'] = 0.01
+    df_dados.loc[df_dados['Pressao media (kgf/cm2)'] < 1.5, 'Vazao Vapor Secador (Ton)'] = 0
 
-    df_dados['ete-adm (kWh)'] = df_dados['ETE Total(KWh)']*0.02
-    df_dados['ete-automacao (kWh)'] = df_dados['ETE Total(KWh)']*0.10
-    df_dados['ete-eletrica (kWh)'] = df_dados['ETE Total(KWh)']*0.02
-    df_dados['ete-mecanica (kWh)'] = df_dados['ETE Total(KWh)']*0.03
-    df_dados['ete-producao (kWh)'] = df_dados['ETE Total(KWh)'] - df_dados[['ete-adm (kWh)','ete-automacao (kWh)','ete-eletrica (kWh)','ete-mecanica (kWh)']].sum(axis=1)
+    #df_dados['ind-escritorio (kWh)'] = df_dados['Industria Total(KWh)']*0.01
+    #df_dados['ind-laboratorio (kWh)'] = df_dados['Industria Total(KWh)']*0.02
+    #df_dados['ind-cozimento (kWh)'] = df_dados['Industria Total(KWh)']*0.53
+    #df_dados['ind-moinho (kWh)'] = df_dados['Industria Total(KWh)']*0.27
+    #df_dados['ind-patriota (kWh)'] = df_dados['Industria Total(KWh)']*0.03
+    #df_dados['ind-automacao (kWh)'] = df_dados['Industria Total(KWh)'] - df_dados[['ind-escritorio (kWh)','ind-laboratorio (kWh)','ind-cozimento (kWh)','ind-moinho (kWh)','ind-patriota (kWh)']].sum(axis=1)
+
+    #df_dados['ete-adm (kWh)'] = df_dados['ETE Total(KWh)']*0.02
+    #df_dados['ete-automacao (kWh)'] = df_dados['ETE Total(KWh)']*0.10
+    #df_dados['ete-eletrica (kWh)'] = df_dados['ETE Total(KWh)']*0.02
+    #df_dados['ete-mecanica (kWh)'] = df_dados['ETE Total(KWh)']*0.03
+    #df_dados['ete-producao (kWh)'] = df_dados['ETE Total(KWh)'] - df_dados[['ete-adm (kWh)','ete-automacao (kWh)','ete-eletrica (kWh)','ete-mecanica (kWh)']].sum(axis=1)
 
     exporta_dados_diario(df_dados,data_importacao,export_path)
 

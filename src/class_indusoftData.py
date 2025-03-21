@@ -7,7 +7,7 @@ import numpy as np
 class Indusoft_data():
     def __init__(self, in_work_path: str, in_data_path: str) -> None:
         self.work_path = in_work_path
-        self.data_path = in_data_path        
+        self.data_path = in_data_path    
     
     def set_labels(self, in_label_dados_escolhidos: list):
         self.labels = in_label_dados_escolhidos
